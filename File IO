@@ -1,0 +1,71 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Windows.Forms;
+using System.IO;
+
+namespace FileIO
+{
+    public partial class Form1 : Form
+    {
+        String filename = "Data.txt";
+        public Form1()
+        {
+            InitializeComponent();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            //StreamWriter sw = new StreamWriter(filename);
+            try
+            {
+                StreamWriter sw = File.AppendText(filename);
+                sw.WriteLine(textBox1.Text);
+                sw.Close();
+            }
+            catch (Exception ex3)
+            {
+                MessageBox.Show(ex3.ToString());
+            }
+            //file input
+            try
+            {
+                StreamReader sr = new StreamReader(filename);
+                String line;
+                int sum = 0;
+                while ((line = sr.ReadLine()) != null)
+                {
+                    try
+                    {
+                        sum += Convert.ToInt32(line);
+                        richTextBox1.Text += line + "\n";
+                        label1.Text = "Az összeg:" + sum;
+                    }
+                    catch (Exception ex2)
+                    {
+                        MessageBox.Show(ex2.ToString());
+                    }
+                }
+                sr.Close();
+            }
+            catch (FileNotFoundException ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void richTextBox1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+    }
+}
