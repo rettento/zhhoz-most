@@ -1,0 +1,102 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Windows.Forms;
+using System.IO;
+
+namespace VizszintesHajitas
+{
+    public partial class Form1 : Form
+    {
+        //globális változók
+        double x = 0;
+        double y = 0;
+        double vx = 0;
+        double vy = 0;
+        double g = 9.81F;
+        String file_name;
+
+        int radius = 4;
+        int slowRate = 50;
+
+        public Form1()
+        {
+            InitializeComponent();
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            vy = vy + g * timer1.Interval / slowRate; //vy = g * t alapján
+            x = x + vx * timer1.Interval / slowRate; //vx = vx*t alapján
+            y = y + vy * timer1.Interval / slowRate; //vy = vy*t alapján
+            Refresh();
+
+            if (y >= this.Height - 50)
+           {
+               y = this.Height - 50;
+               timer1.Enabled = false;
+               button2.Enabled = false;
+               button1.Enabled = true;
+           }
+            try
+            {
+                StreamWriter sr = File.AppendText(file_name);
+                sr.WriteLine("x:" + x + " " + "y: " + y + "\t\n");
+                sr.Close();
+            } catch(Exception ex) 
+            {
+                label4.Text = "A fájl nem megfelelő!";
+            }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            button1.Enabled = false;
+            button2.Enabled = true;
+            try
+            {
+                y = this.Height - Convert.ToDouble(textBox1.Text);
+                vx = Convert.ToDouble(textBox2.Text);
+                vy = 0;
+                x = 0;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Nem megfelelő kezdőmagasság érték és/vagy kezdő x irányú sebességérték!", "Hiba");
+            }
+            timer1.Enabled = true;
+            timer1.Interval = 1;
+            if (textBox3.Text != "")
+            {
+                file_name = textBox3.Text;
+            }
+            else
+            {
+                file_name = "Adatok.txt";
+            }
+        }
+
+        private void Form1_Paint(object sender, PaintEventArgs e)
+        {
+            Graphics g = this.CreateGraphics();
+            SolidBrush b = new SolidBrush(Color.Blue);
+            g.FillEllipse(b, Convert.ToInt32(x - radius), Convert.ToInt32(y - radius), 2*radius, 2*radius);
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            timer1.Enabled = false;
+            button1.Enabled = true;
+            button2.Enabled = false;
+        }
+    }
+}
